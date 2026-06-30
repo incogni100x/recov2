@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover"
+    />
+    <title>Rob Thomas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* Customizable coverflow options */
+        --cf-perspective: 1100px;
+        --cf-perspective-origin-x: 50%;
+        --cf-perspective-origin-y: 42%;
+        --cf-slide-width: min(280px, 72vw);
+        --cf-slide-height: min(380px, 58vw);
+        --cf-gap: 1.05;
+        --cf-rotate-y: 52deg;
+        --cf-translate-z: 180px;
+        --cf-scale-drop: 0.14;
+        --cf-blur-far: 2px;
+        --cf-duration: 0.55s;
+        --cf-ease: cubic-bezier(0.33, 1, 0.68, 1);
+        --cf-bg: #161616;
+        --cf-accent: #5eead4;
+        --cf-accent-dim: #2dd4bf18;
+        --color-subtext: rgb(107, 107, 107);
+        --color-contact-bg: rgb(0, 132, 209);
+        --color-text-white: rgb(250, 250, 250);
+        --site-nav-inline: 272px;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      @media (max-width: 880px) {
+        :root {
+          --site-nav-inline: 1.25rem;
+        }
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      html {
+        color-scheme: dark;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        font-family: "Inter", system-ui, sans-serif;
+        background: #161616;
+        color: #e2e8f0;
+        overflow-x: hidden;
+      }
+
+      .page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 clamp(1rem, 3vw, 2rem) 4rem;
+      }
+
+      /* Top bar: 272px inset, #161616, Inter (specs separate from page header) */
+      .site-nav {
+        font-family: "Inter", system-ui, sans-serif;
+        background: #161616;
+        margin-left: var(--site-nav-inline);
+        margin-right: var(--site-nav-inline);
+        margin-top: 0;
+        padding: 14px 0;
+        position: sticky;
+        top: 0;
+        /* Above coverflow slides (z-index up to 100) so images don’t overlap the bar */
+        z-index: 200;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s ease;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 12px 24px;
+      }
+
+      .site-nav.site-nav--scrolled {
+        border-bottom-color: rgba(255, 255, 255, 0.06);
+      }
+
+      @media (max-width: 720px) {
+        /* Full-bleed bar so sticky nav doesn’t reveal carousel at the sides */
+        .site-nav {
+          margin-left: 0;
+          margin-right: 0;
+          width: 100%;
+          max-width: none;
+          padding: 10px var(--site-nav-inline);
+          box-sizing: border-box;
+          grid-template-columns: 1fr auto;
+          align-items: center;
+          column-gap: 12px;
+          row-gap: 0;
+        }
+
+        /* Inset underline on scroll (matches old shorter line; bar stays full-bleed) */
+        .site-nav.site-nav--scrolled {
+          border-bottom-color: transparent;
+        }
+
+        .site-nav.site-nav--scrolled::after {
+          content: "";
+          position: absolute;
+          left: var(--site-nav-inline);
+          right: var(--site-nav-inline);
+          bottom: 0;
+          height: 1px;
+          background: rgba(255, 255, 255, 0.06);
+          pointer-events: none;
+        }
+
+        .site-nav__brand {
+          justify-self: start;
+          text-align: start;
+        }
+
+        .site-nav__panel {
+          display: none;
+          grid-column: 1 / -1;
+          width: 100%;
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+          padding-top: 1rem;
+          margin-top: 0.75rem;
+          border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .site-nav--open .site-nav__panel {
+          display: flex;
+        }
+
+        .site-nav__links {
+          flex-direction: column;
+          width: 100%;
+          justify-content: flex-start;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .site-nav__contact {
+          justify-self: center;
+        }
+      }
+
+      .site-nav__brand {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 18px;
+        line-height: 28px;
+        font-weight: 500;
+        color: var(--color-text-white);
+        text-decoration: none;
+        letter-spacing: -0.01em;
+        justify-self: start;
+      }
+
+      .site-nav__brand:hover {
+        color: var(--color-text-white);
+      }
+
+      .site-nav__brand:focus-visible {
+        outline: 2px solid var(--cf-accent);
+        outline-offset: 4px;
+        border-radius: 2px;
+      }
+
+      /* Mobile-first: hamburger visible; desktop hides it via min-width rule below */
+      .site-nav__toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        margin: 0;
+        padding: 0;
+        border: none;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--color-text-white);
+        cursor: pointer;
+        justify-self: end;
+        transition: background 0.15s ease;
+      }
+
+      @media (min-width: 721px) {
+        .site-nav__toggle {
+          display: none;
+        }
+
+        .site-nav__panel {
+          display: contents;
+        }
+      }
+
+      .site-nav__toggle:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .site-nav__toggle:focus-visible {
+        outline: 2px solid var(--cf-accent);
+        outline-offset: 2px;
+      }
+
+      .site-nav__toggle-icon {
+        display: block;
+        pointer-events: none;
+        overflow: visible;
+      }
+
+      /* Shared center of the icon viewport so both bars meet as an X */
+      .site-nav__toggle-line {
+        transform-box: view-box;
+        transform-origin: 12px 12px;
+        transition:
+          transform 0.2s ease,
+          opacity 0.2s ease;
+      }
+
+      /* Lines at y=7, 12, 17 → move outer bars ±5px to y=12, then rotate about (12,12) */
+      .site-nav--open .site-nav__toggle-line--top {
+        transform: translateY(5px) rotate(45deg);
+      }
+
+      .site-nav--open .site-nav__toggle-line--mid {
+        opacity: 0;
+      }
+
+      .site-nav--open .site-nav__toggle-line--bot {
+        transform: translateY(-5px) rotate(-45deg);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .site-nav__toggle-line {
+          transition: none;
+        }
+      }
+
+      .site-nav__links {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 8px 20px;
+        justify-self: center;
+      }
+
+      .site-nav__link {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 500;
+        color: var(--color-subtext);
+        text-decoration: none;
+      }
+
+      .site-nav__link:hover {
+        color: #e5e5e5;
+      }
+
+      .site-nav__link:focus-visible {
+        outline: 2px solid var(--cf-accent);
+        outline-offset: 3px;
+        border-radius: 2px;
+      }
+
+      /* 32px chip, 10px radius, rgb(0,132,209), shadow 0 1px 2px #000 50% */
+      .site-nav__contact {
+        justify-self: end;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 32px;
+        padding: 0 14px;
+        border-radius: 10px;
+        box-sizing: border-box;
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 500;
+        color: var(--color-text-white);
+        text-decoration: none;
+        background: var(--color-contact-bg);
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+        border: none;
+        cursor: pointer;
+        transition:
+          background 0.15s ease,
+          box-shadow 0.15s ease,
+          transform 0.12s ease;
+      }
+
+      .site-nav__contact:hover {
+        background: rgb(0, 118, 188);
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.45);
+      }
+
+      .site-nav__contact:active {
+        transform: scale(0.98);
+      }
+
+      .site-nav__contact:focus-visible {
+        outline: 2px solid var(--color-text-white);
+        outline-offset: 2px;
+      }
+
+      header.site-header {
+        margin-left: var(--site-nav-inline);
+        margin-right: var(--site-nav-inline);
+        margin-bottom: 0;
+        padding: clamp(2.5rem, 8vw, 4.5rem) 0 0;
+        text-align: center;
+      }
+
+      .hero-intro-kicker {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        letter-spacing: 0.35px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: rgb(0, 132, 209);
+        margin: 0 0 1rem;
+        vertical-align: baseline;
+        text-shadow: none;
+      }
+
+      .hero-intro-lede {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 36px;
+        line-height: 43.2px;
+        letter-spacing: -0.9px;
+        font-weight: 600;
+        color: var(--color-text-white);
+        margin: 0;
+        margin-inline: auto;
+        max-width: 52rem;
+        vertical-align: baseline;
+        text-shadow: none;
+      }
+
+      @media (max-width: 720px) {
+        .hero-intro-lede {
+          font-size: 24px;
+          line-height: 28.8px;
+          letter-spacing: -0.6px;
+          font-weight: 600;
+          vertical-align: baseline;
+        }
+      }
+
+      .hero-intro-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem 2rem;
+        margin-top: clamp(1.5rem, 4vw, 2.25rem);
+      }
+
+      .hero-intro-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        height: 32px;
+        padding: 0 14px;
+        border-radius: 10px;
+        box-sizing: border-box;
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 20px;
+        text-decoration: none;
+        cursor: pointer;
+        transition:
+          transform 0.12s ease,
+          filter 0.2s ease,
+          background-color 0.2s ease,
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .hero-intro-btn svg {
+        flex-shrink: 0;
+      }
+
+      .hero-intro-btn:focus-visible {
+        outline: 2px solid var(--cf-accent);
+        outline-offset: 3px;
+      }
+
+      .hero-intro-btn--primary {
+        background: linear-gradient(to right, var(--color-contact-bg), rgb(0, 118, 188));
+        color: var(--color-text-white);
+        border: none;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+      }
+
+      .hero-intro-btn--primary:hover {
+        filter: brightness(1.08);
+      }
+
+      .hero-intro-btn--primary:active {
+        transform: scale(0.98);
+      }
+
+      .hero-intro-btn--secondary {
+        background: #1d1d1d;
+        color: var(--color-text-white);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .hero-intro-btn--secondary:hover {
+        background: #252525;
+        border-color: rgba(255, 255, 255, 0.16);
+      }
+
+      .hero-intro-btn--secondary:active {
+        transform: scale(0.98);
+      }
+
+      /* FAQ — same horizontal inset as hero (var(--site-nav-inline)) */
+      .faq-section {
+        margin-left: var(--site-nav-inline);
+        margin-right: var(--site-nav-inline);
+        margin-top: clamp(2.5rem, 7vw, 4.5rem);
+        padding-bottom: clamp(3rem, 8vw, 5rem);
+      }
+
+      .faq-kicker {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        letter-spacing: 0.35px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: rgb(255, 32, 86);
+        margin: 0 0 1rem;
+        vertical-align: baseline;
+      }
+
+      .faq-title {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 24px;
+        line-height: 28.8px;
+        letter-spacing: -0.6px;
+        font-weight: 600;
+        color: var(--color-text-white);
+        margin: 0 0 clamp(1.75rem, 4vw, 2.5rem);
+        vertical-align: baseline;
+      }
+
+      .faq-list {
+        margin: 0;
+        padding: 0;
+        max-width: 52rem;
+      }
+
+      .faq-item {
+        margin: 0 0 clamp(1.5rem, 3vw, 2rem);
+      }
+
+      .faq-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .faq-q {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 18px;
+        line-height: 28px;
+        font-weight: 500;
+        color: var(--color-text-white);
+        margin: 0 0 0.5rem;
+        vertical-align: baseline;
+      }
+
+      .faq-a {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: 400;
+        color: var(--color-subtext);
+        margin: 0;
+        vertical-align: baseline;
+      }
+
+      .faq-list dd {
+        margin-inline-start: 0;
+      }
+
+      /* Pricing — centered, same horizontal inset as hero / FAQ */
+      .pricing-section {
+        margin-left: var(--site-nav-inline);
+        margin-right: var(--site-nav-inline);
+        margin-top: clamp(2.5rem, 7vw, 4.5rem);
+        padding-bottom: clamp(3rem, 8vw, 5rem);
+        text-align: center;
+      }
+
+      .pricing-kicker {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        letter-spacing: 0.35px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: rgb(0, 153, 102);
+        margin: 0 0 1rem;
+        vertical-align: baseline;
+      }
+
+      .pricing-title {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 24px;
+        line-height: 28.8px;
+        letter-spacing: -0.6px;
+        font-weight: 600;
+        color: var(--color-text-white);
+        margin: 0 auto clamp(2rem, 4vw, 2.75rem);
+        max-width: 40rem;
+        vertical-align: baseline;
+      }
+
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+        max-width: 56rem;
+        margin: 0 auto;
+        text-align: left;
+      }
+
+      @media (min-width: 768px) {
+        .pricing-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 1.5rem;
+        }
+      }
+
+      .pricing-card {
+        background: #1d1d1d;
+        border-radius: 12px;
+        padding: 1.5rem 1.5rem 1.75rem;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        box-sizing: border-box;
+      }
+
+      .pricing-card-title {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 20px;
+        line-height: 28px;
+        font-weight: 600;
+        color: var(--color-text-white);
+        margin: 0 0 1rem;
+        vertical-align: baseline;
+      }
+
+      .pricing-price {
+        margin: 0 0 0.35rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.15rem;
+        line-height: 1;
+      }
+
+      .pricing-currency {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 14px;
+        line-height: 32px;
+        font-weight: 500;
+        color: var(--color-subtext);
+        vertical-align: baseline;
+      }
+
+      .pricing-amount {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 24px;
+        line-height: 32px;
+        font-weight: 500;
+        color: var(--color-text-white);
+        vertical-align: baseline;
+      }
+
+      .pricing-usd {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 13px;
+        line-height: 20px;
+        font-weight: 500;
+        color: var(--color-subtext);
+        margin: 0 0 1.25rem;
+      }
+
+      .pricing-usd strong {
+        color: var(--color-text-white);
+        font-weight: 600;
+      }
+
+      .pricing-includes-label {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 14px;
+        line-height: 14px;
+        font-weight: 500;
+        color: var(--color-text-white);
+        margin: 0 0 0.75rem;
+        vertical-align: baseline;
+      }
+
+      .pricing-features {
+        list-style: none;
+        margin: 0 0 1.5rem;
+        padding: 0;
+        flex: 1;
+      }
+
+      .pricing-features li {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 500;
+        color: var(--color-text-white);
+        margin: 0 0 0.65rem;
+        padding-left: 1.35rem;
+        position: relative;
+        vertical-align: baseline;
+      }
+
+      .pricing-features li:last-child {
+        margin-bottom: 0;
+      }
+
+      .pricing-features li .pricing-check {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 14px;
+        height: 14px;
+        color: rgb(0, 153, 102);
+        flex-shrink: 0;
+      }
+
+      .pricing-card .hero-intro-btn {
+        align-self: flex-start;
+      }
+
+      /* Footer — brand + 3 columns in one row; wide gap before link grid */
+      .site-footer {
+        margin-top: clamp(1.5rem, 4vw, 2.5rem);
+        margin-left: var(--site-nav-inline);
+        margin-right: var(--site-nav-inline);
+        padding: clamp(1.75rem, 4vw, 2.5rem) 0 clamp(1.75rem, 4vw, 2.5rem);
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .site-footer__row {
+        display: grid;
+        grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+        align-items: start;
+        column-gap: clamp(2.5rem, 10vw, 6.5rem);
+        row-gap: 1.5rem;
+      }
+
+      .site-footer__brand {
+        justify-self: start;
+        max-width: 100%;
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 18px;
+        line-height: 28px;
+        font-weight: 500;
+        color: var(--color-text-white);
+        text-decoration: none;
+        letter-spacing: -0.01em;
+      }
+
+      .site-footer__brand:hover {
+        color: var(--color-text-white);
+      }
+
+      .site-footer__brand:focus-visible {
+        outline: 2px solid var(--cf-accent);
+        outline-offset: 4px;
+        border-radius: 2px;
+      }
+
+      .site-footer__nav {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        column-gap: clamp(1rem, 3vw, 1.75rem);
+        row-gap: 1rem;
+      }
+
+      .site-footer__heading {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: 500;
+        letter-spacing: normal;
+        text-transform: none;
+        color: var(--color-text-white);
+        margin: 0 0 0.45rem;
+      }
+
+      .site-footer__list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .site-footer__link {
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 500;
+        color: var(--color-subtext);
+        text-decoration: none;
+        width: fit-content;
+      }
+
+      .site-footer__link:hover {
+        color: #e5e5e5;
+      }
+
+      .site-footer__link:focus-visible {
+        outline: 2px solid var(--cf-accent);
+        outline-offset: 3px;
+        border-radius: 2px;
+      }
+
+      @media (max-width: 720px) {
+        .site-footer__row {
+          grid-template-columns: 1fr;
+          justify-items: start;
+          text-align: left;
+        }
+
+        .site-footer__nav {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          align-items: flex-start;
+          justify-content: flex-start;
+          width: 100%;
+          max-width: none;
+          gap: 1rem 1.25rem;
+        }
+
+        .site-footer__nav > div {
+          flex: 1 1 0;
+          min-width: 0;
+        }
+
+        .site-footer__list {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .site-footer__link {
+          text-align: left;
+        }
+      }
+
+      /* Stage: inverted feel = perspective origin above center (looking slightly down into the deck) */
+      .coverflow {
+        position: relative;
+        width: 100%;
+        padding: 0 0 clamp(1.5rem, 4vw, 2.5rem);
+        --visible-radius: 3;
+      }
+
+      .coverflow__viewport {
+        perspective: var(--cf-perspective);
+        perspective-origin: var(--cf-perspective-origin-x) var(--cf-perspective-origin-y);
+        width: 100%;
+        height: calc(var(--cf-slide-height) + 4rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: visible;
+      }
+
+      .coverflow__track {
+        position: relative;
+        width: var(--cf-slide-width);
+        height: var(--cf-slide-height);
+        transform-style: preserve-3d;
+        transition: transform var(--cf-duration) var(--cf-ease);
+      }
+
+      .coverflow__slide {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: var(--cf-slide-width);
+        height: var(--cf-slide-height);
+        margin-left: calc(var(--cf-slide-width) / -2);
+        margin-top: calc(var(--cf-slide-height) / -2);
+        border-radius: 1.25rem;
+        overflow: hidden;
+        transform-style: preserve-3d;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.08),
+          0 20px 40px -16px rgba(0, 0, 0, 0.55),
+          0 0 28px -12px var(--cf-accent-dim);
+        transition:
+          transform var(--cf-duration) var(--cf-ease),
+          opacity var(--cf-duration) var(--cf-ease),
+          filter var(--cf-duration) var(--cf-ease),
+          box-shadow var(--cf-duration) var(--cf-ease);
+        cursor: grab;
+        user-select: none;
+        touch-action: pan-y;
+      }
+
+      .coverflow__slide:active {
+        cursor: grabbing;
+      }
+
+      .coverflow__slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        pointer-events: none;
+      }
+
+      .coverflow__slide::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(160deg, transparent 40%, rgba(0, 0, 0, 0.45) 100%);
+        pointer-events: none;
+      }
+
+      .coverflow__label {
+        position: absolute;
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+        z-index: 1;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--color-text-white);
+        text-shadow: 0 1px 12px rgba(0, 0, 0, 0.8);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        :root {
+          --cf-duration: 0.01ms;
+          --cf-blur-far: 0px;
+        }
+
+        .coverflow__slide {
+          transition: opacity 0.2s ease;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="site-nav" aria-label="Primary">
+      <a class="site-nav__brand" href="#">Rob Thomas</a>
+      <button
+        type="button"
+        class="site-nav__toggle"
+        id="site-nav-toggle"
+        aria-expanded="false"
+        aria-controls="site-nav-panel"
+      >
+        <span class="visually-hidden site-nav__toggle-label">Open menu</span>
+        <svg
+          class="site-nav__toggle-icon"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            class="site-nav__toggle-line site-nav__toggle-line--top"
+            d="M5 7h14"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+          <path
+            class="site-nav__toggle-line site-nav__toggle-line--mid"
+            d="M5 12h14"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+          <path
+            class="site-nav__toggle-line site-nav__toggle-line--bot"
+            d="M5 17h14"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+      <div class="site-nav__panel" id="site-nav-panel">
+        <div class="site-nav__links">
+          <a class="site-nav__link" href="#">Booking</a>
+          <a class="site-nav__link" href="#">Meet and Greet</a>
+          <a class="site-nav__link" href="#">Fan Card</a>
+        </div>
+        <a class="site-nav__contact" href="mailto:hello@robthomas.world">Contact us</a>
+      </div>
+    </nav>
+
+    <script>
+      (function () {
+        var nav = document.querySelector(".site-nav");
+        var btn = document.getElementById("site-nav-toggle");
+        var panel = document.getElementById("site-nav-panel");
+        var label = document.querySelector(".site-nav__toggle-label");
+        if (!nav) return;
+
+        var mq = window.matchMedia("(max-width: 720px)");
+
+        function updateNavScrollUnderline() {
+          nav.classList.toggle("site-nav--scrolled", window.scrollY > 0);
+        }
+
+        updateNavScrollUnderline();
+        window.addEventListener("scroll", updateNavScrollUnderline, { passive: true });
+
+        if (!btn) return;
+
+        function setOpen(open) {
+          nav.classList.toggle("site-nav--open", open);
+          btn.setAttribute("aria-expanded", open ? "true" : "false");
+          if (label) label.textContent = open ? "Close menu" : "Open menu";
+        }
+
+        btn.addEventListener("click", function () {
+          if (!mq.matches) return;
+          setOpen(!nav.classList.contains("site-nav--open"));
+        });
+
+        if (panel) {
+          panel.addEventListener("click", function (e) {
+            if (!mq.matches || !nav.classList.contains("site-nav--open")) return;
+            if (e.target.closest("a")) setOpen(false);
+          });
+        }
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") setOpen(false);
+        });
+
+        document.addEventListener("click", function (e) {
+          if (!nav.classList.contains("site-nav--open")) return;
+          if (!nav.contains(e.target)) setOpen(false);
+        });
+
+        mq.addEventListener("change", function (e) {
+          if (!e.matches) setOpen(false);
+        });
+      })();
+    </script>
+
+    <header class="site-header">
+      <p class="hero-intro-kicker">Introducing Rob Thomas</p>
+      <p class="hero-intro-lede">
+        American rock musician best known as the lead singer of Matchbox Twenty and for hit songs like "Smooth" with Carlos Santana, "3 AM", and "Unwell". Book a
+        personal meet &amp; greet, request an appearance, or apply for an exclusive fan card.
+      </p>
+      <div class="hero-intro-actions">
+        <a class="hero-intro-btn hero-intro-btn--primary" href="#">
+          Book Meet &amp; Greet
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="7" y1="17" x2="17" y2="7" />
+            <polyline points="7 7 17 7 17 17" />
+          </svg>
+        </a>
+        <a class="hero-intro-btn hero-intro-btn--secondary" href="#">
+          Fan Card
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="7" y1="17" x2="17" y2="7" />
+            <polyline points="7 7 17 7 17 17" />
+          </svg>
+        </a>
+      </div>
+    </header>
+
+    <div class="page">
+      <section
+        class="coverflow"
+        id="coverflow"
+        aria-roledescription="carousel"
+        aria-label="Featured slides"
+      >
+        <div class="coverflow__viewport">
+          <div class="coverflow__track" id="track" role="list"></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="faq-section" aria-labelledby="faq-heading">
+      <p class="faq-kicker">Common inquiries</p>
+      <h2 class="faq-title" id="faq-heading">Frequently asked questions</h2>
+      <dl class="faq-list">
+        <div class="faq-item">
+          <dt class="faq-q">How do I book a meet and greet?</dt>
+          <dd class="faq-a">
+            Use the Book Meet &amp; Greet action in the header or above. You’ll be guided through
+            availability, pricing, and confirmation. For general appearances or other requests, use
+            Booking or Contact us.
+          </dd>
+        </div>
+        <div class="faq-item">
+          <dt class="faq-q">Is this an official fan experiences channel?</dt>
+          <dd class="faq-a">
+            Yes. This site is the verified place to learn about official fan experiences, fan card
+            information, and how to avoid scams. Always confirm links and communications match what
+            you see here.
+          </dd>
+        </div>
+        <div class="faq-item">
+          <dt class="faq-q">What is the fan card?</dt>
+          <dd class="faq-a">
+            The fan card is an exclusive program for supporters. Details and eligibility are
+            outlined when you apply; processing times and requirements may vary by region.
+          </dd>
+        </div>
+        <div class="faq-item">
+          <dt class="faq-q">How can I report a scam or impersonation?</dt>
+          <dd class="faq-a">
+            If someone claims to represent official meet and greets outside this channel, do not pay
+            or share personal data. Use the contact options on this site and, when appropriate, report
+            the account to the platform where you saw it.
+          </dd>
+        </div>
+        <div class="faq-item">
+          <dt class="faq-q">Who do I contact for support?</dt>
+          <dd class="faq-a">
+            Reach out via the Contact us link in the navigation. Include your booking reference or
+            question so the team can respond quickly.
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="pricing-section" aria-labelledby="pricing-heading">
+      <p class="pricing-kicker">Pricing</p>
+      <h2 class="pricing-title" id="pricing-heading">
+        Pick your experience, explore meet and greet and fan cards tiers
+      </h2>
+
+      <div class="pricing-grid">
+        <article class="pricing-card">
+          <h3 class="pricing-card-title">Meet &amp; Greet</h3>
+          <p class="pricing-price">
+            <span class="pricing-currency">$</span><span class="pricing-amount">5,000</span>
+          </p>
+          <p class="pricing-usd">
+            This is the <strong>starting from</strong> rate for our entry package (USD). Every tier,
+            add-on, deposit rule, and VIP option is spelled out on the meet &amp; greet page—not only this
+            number.
+          </p>
+          <p class="pricing-includes-label">What’s included</p>
+          <ul class="pricing-features">
+            <li>
+              <svg class="pricing-check" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5" />
+                <path d="M6 10l2.5 2.5L14 7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Meet &amp; greet plus group photo · 1–2 hours (Basic)
+            </li>
+            <li>
+              <svg class="pricing-check" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5" />
+                <path d="M6 10l2.5 2.5L14 7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Non-refundable deposit required to confirm any booking
+            </li>
+          </ul>
+          <a class="hero-intro-btn hero-intro-btn--primary" href="meet-and-greet.html">
+            View full pricing
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="7" y1="17" x2="17" y2="7" />
+              <polyline points="7 7 17 7 17 17" />
+            </svg>
+          </a>
+        </article>
+
+        <article class="pricing-card">
+          <h3 class="pricing-card-title">Fan Card</h3>
+          <p class="pricing-price">
+            <span class="pricing-currency">$</span><span class="pricing-amount">3,500</span>
+          </p>
+          <p class="pricing-usd">
+            Shown above is the <strong>starting from</strong> Bronze fee (USD). Silver, Gold, and every
+            benefit are listed on the fan card page—open it for the full breakdown.
+          </p>
+          <p class="pricing-includes-label">What’s included</p>
+          <ul class="pricing-features">
+            <li>
+              <svg class="pricing-check" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5" />
+                <path d="M6 10l2.5 2.5L14 7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Digital membership card (downloadable PDF)
+            </li>
+            <li>
+              <svg class="pricing-check" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5" />
+                <path d="M6 10l2.5 2.5L14 7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Monthly newsletter with news &amp; photos
+            </li>
+            <li>
+              <svg class="pricing-check" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5" />
+                <path d="M6 10l2.5 2.5L14 7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Access to public fan forums
+            </li>
+            <li>
+              <svg class="pricing-check" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5" />
+                <path d="M6 10l2.5 2.5L14 7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              10% discount on official merch (Bronze tier)
+            </li>
+          </ul>
+          <a class="hero-intro-btn hero-intro-btn--secondary" href="fan-card.html">
+            See tiers &amp; details
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="7" y1="17" x2="17" y2="7" />
+              <polyline points="7 7 17 7 17 17" />
+            </svg>
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <div class="site-footer__row">
+        <a class="site-footer__brand" href="#">Rob Thomas</a>
+        <nav class="site-footer__nav" aria-label="Footer">
+          <div>
+            <h2 class="site-footer__heading" id="footer-packages">Packages</h2>
+            <ul class="site-footer__list" aria-labelledby="footer-packages">
+              <li><a class="site-footer__link" href="#">Booking</a></li>
+              <li><a class="site-footer__link" href="meet-and-greet.html">Meet and Greet</a></li>
+              <li><a class="site-footer__link" href="fan-card.html">Fan Card</a></li>
+            </ul>
+          </div>
+          <div>
+            <h2 class="site-footer__heading" id="footer-contact">Contact</h2>
+            <ul class="site-footer__list" aria-labelledby="footer-contact">
+              <li>
+                <a
+                  class="site-footer__link"
+                  href="mailto:hello@robthomas.world?subject=Scam%20or%20impersonation%20report"
+                  >Report Scam</a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h2 class="site-footer__heading" id="footer-legal">Legal</h2>
+            <ul class="site-footer__list" aria-labelledby="footer-legal">
+              <li><a class="site-footer__link" href="#">Privacy Policy</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        const slidesData = [
+          { src: "https://picsum.photos/seed/cf1/600/800", title: "Nebula" },
+          { src: "https://picsum.photos/seed/cf2/600/800", title: "Coast" },
+          { src: "https://picsum.photos/seed/cf3/600/800", title: "Summit" },
+          { src: "https://picsum.photos/seed/cf4/600/800", title: "Studio" },
+          { src: "https://picsum.photos/seed/cf5/600/800", title: "Velvet" },
+          { src: "https://picsum.photos/seed/cf6/600/800", title: "Urban" },
+          { src: "https://picsum.photos/seed/cf7/600/800", title: "Aurora" },
+        ];
+
+        const track = document.getElementById("track");
+        const root = document.documentElement;
+        const section = document.getElementById("coverflow");
+
+        let index = Math.floor(slidesData.length / 2);
+        let pointerStartX = null;
+        let reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        const AUTOPLAY_MS = 4500;
+        let autoplayTimer = null;
+        let hoverOrFocusPaused = false;
+
+        function stopAutoplay() {
+          if (autoplayTimer !== null) {
+            clearInterval(autoplayTimer);
+            autoplayTimer = null;
+          }
+        }
+
+        function startAutoplay() {
+          stopAutoplay();
+          if (reducedMotion) return;
+          autoplayTimer = window.setInterval(function () {
+            if (hoverOrFocusPaused || document.visibilityState !== "visible") return;
+            goTo(index + 1, true);
+          }, AUTOPLAY_MS);
+        }
+
+        function restartAutoplayAfterInteraction() {
+          stopAutoplay();
+          startAutoplay();
+        }
+
+        function buildSlides() {
+          track.innerHTML = "";
+          slidesData.forEach((item, i) => {
+            const el = document.createElement("article");
+            el.className = "coverflow__slide";
+            el.setAttribute("role", "listitem");
+            el.setAttribute("aria-hidden", "true");
+            el.dataset.index = String(i);
+            el.innerHTML =
+              '<img src="' +
+              item.src +
+              '" alt="' +
+              item.title +
+              '" width="600" height="800" loading="lazy" decoding="async" />' +
+              '<span class="coverflow__label">' +
+              item.title +
+              "</span>";
+            el.addEventListener("click", function () {
+              goTo(parseInt(el.dataset.index, 10));
+            });
+            el.addEventListener("keydown", function (e) {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                goTo(parseInt(el.dataset.index, 10));
+              }
+            });
+            track.appendChild(el);
+          });
+        }
+
+        function getSlideEls() {
+          return track.querySelectorAll(".coverflow__slide");
+        }
+
+        /** Shortest signed steps from center to slide i on a ring — no “end”, wraps continuously */
+        function circularOffset(i, center, n) {
+          let d = i - center;
+          const h = Math.floor(n / 2);
+          if (d > h) d -= n;
+          else if (d < -h) d += n;
+          return d;
+        }
+
+        function goTo(i, fromAutoplay) {
+          const n = slidesData.length;
+          index = ((i % n) + n) % n;
+          layout();
+          if (!fromAutoplay) restartAutoplayAfterInteraction();
+        }
+
+        function layout() {
+          const els = getSlideEls();
+          const rs = getComputedStyle(root);
+          const rotateFromCss = parseFloat(rs.getPropertyValue("--cf-rotate-y")) || 52;
+          const tzFromCss = parseFloat(rs.getPropertyValue("--cf-translate-z")) || 180;
+          const gapFromCss = parseFloat(rs.getPropertyValue("--cf-gap")) || 1.05;
+          const blurPx = parseFloat(rs.getPropertyValue("--cf-blur-far")) || 0;
+
+          const ry = parseFloat(root.style.getPropertyValue("--cf-rotate-y-value")) || rotateFromCss;
+          const tz = parseFloat(root.style.getPropertyValue("--cf-translate-z-value")) || tzFromCss;
+          const gap = parseFloat(root.style.getPropertyValue("--cf-gap-value")) || gapFromCss;
+
+          const slideW = track.offsetWidth || 280;
+          const n = slidesData.length;
+          const maxRing = Math.floor(n / 2);
+          const visRadius = Math.min(4, maxRing);
+
+          els.forEach(function (el, i) {
+            const offset = circularOffset(i, index, n);
+            const abs = Math.abs(offset);
+            const sign = offset === 0 ? 0 : offset > 0 ? 1 : -1;
+
+            /* 3D coverflow + inverted perspective origin: depth via translateZ + rotateY */
+            const translateX = sign * slideW * gap * abs * 0.92;
+            const rotateY = -sign * ry * Math.min(abs, 1) - sign * ry * 0.32 * Math.max(abs - 1, 0);
+            const translateZ = -tz * abs * 0.85;
+            const scale = Math.max(0.72, 1 - 0.14 * abs);
+            const opacity = abs > visRadius ? 0 : Math.max(0.2, 1 - abs * 0.12);
+            const blur = reducedMotion || !blurPx ? 0 : Math.min(abs, 2) * blurPx;
+
+            el.style.zIndex = String(100 - abs);
+            el.style.opacity = String(opacity);
+            el.style.filter = blur ? "blur(" + blur + "px)" : "none";
+
+            if (reducedMotion && abs > 0) {
+              el.style.transform = "translateX(" + translateX * 0.28 + "px) scale(" + (0.9 - abs * 0.05) + ")";
+            } else {
+              el.style.transform =
+                "translateX(" +
+                translateX +
+                "px) translateZ(" +
+                translateZ +
+                "px) rotateY(" +
+                rotateY +
+                "deg) scale(" +
+                scale +
+                ")";
+            }
+
+            el.setAttribute("aria-hidden", abs > 1 ? "true" : "false");
+            el.setAttribute("tabindex", offset === 0 ? "0" : "-1");
+            if (offset === 0) el.setAttribute("aria-current", "true");
+            else el.removeAttribute("aria-current");
+          });
+        }
+
+        document.addEventListener("keydown", function (e) {
+          const t = e.target;
+          const tag = t && t.tagName;
+          if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+          if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            goTo(index - 1);
+          }
+          if (e.key === "ArrowRight") {
+            e.preventDefault();
+            goTo(index + 1);
+          }
+        });
+
+        track.addEventListener(
+          "pointerdown",
+          function (e) {
+            if (e.button !== 0) return;
+            pointerStartX = e.clientX;
+            track.setPointerCapture(e.pointerId);
+          },
+          true
+        );
+
+        track.addEventListener("pointerup", function (e) {
+          if (pointerStartX == null) return;
+          const dx = e.clientX - pointerStartX;
+          pointerStartX = null;
+          try {
+            track.releasePointerCapture(e.pointerId);
+          } catch (_) {}
+          if (Math.abs(dx) > 50) goTo(dx < 0 ? index + 1 : index - 1);
+        });
+
+        track.addEventListener("pointercancel", function () {
+          pointerStartX = null;
+        });
+
+        section.addEventListener("mouseenter", function () {
+          hoverOrFocusPaused = true;
+        });
+        section.addEventListener("mouseleave", function () {
+          hoverOrFocusPaused = false;
+        });
+
+        section.addEventListener("focusin", function () {
+          hoverOrFocusPaused = true;
+        });
+        section.addEventListener("focusout", function () {
+          window.setTimeout(function () {
+            if (!section.contains(document.activeElement)) hoverOrFocusPaused = false;
+          }, 0);
+        });
+
+        document.addEventListener("visibilitychange", function () {
+          if (document.visibilityState === "visible" && !reducedMotion) {
+            restartAutoplayAfterInteraction();
+          }
+        });
+
+        buildSlides();
+        layout();
+        startAutoplay();
+
+        window.addEventListener("resize", function () {
+          layout();
+        });
+
+        window.matchMedia("(prefers-reduced-motion: reduce)").addEventListener("change", function (e) {
+          reducedMotion = e.matches;
+          layout();
+          if (reducedMotion) stopAutoplay();
+          else startAutoplay();
+        });
+      })();
+    </script>
+  </body>
+</html>

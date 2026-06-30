@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Inter+Tight:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <title>QuickCapture - Fastest screen recording</title>
+    <meta name="description" content="QuickCap - Record your screen and generate shareable links in seconds. Fast, simple, and free screen recording tool.">
+    <meta name="author" content="QuickCapture" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="QuickCapture" />
+    <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    
+    
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/og-image.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="/og-image.png" />
+    
+    <link rel="canonical" href="/" />
+    <meta property="og:title" content="QuickCapture - Fastest screen recording">
+  <meta name="twitter:title" content="QuickCapture - Fastest screen recording">
+  <meta property="og:description" content="QuickCap - Record your screen and generate shareable links in seconds. Fast, simple, and free screen recording tool.">
+  <meta name="twitter:description" content="QuickCap - Record your screen and generate shareable links in seconds. Fast, simple, and free screen recording tool.">
+  <script type="module" crossorigin src="/assets/index-DvKohJdN.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DPomBlj1.css">
+<link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script><script defer src="/~flock.js" data-proxy-url="/~api/analytics"></script></head>
+
+  <body>
+    <div id="root"></div>
+    <script src="https://embed.small.chat/T08NYN604N5C0A2MSNBDRA.js" async></script>
+  </body>
+</html>
