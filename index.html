@@ -532,38 +532,96 @@
         margin: 0;
         padding: 0;
         max-width: 52rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
       }
 
       .faq-item {
-        margin: 0 0 clamp(1.5rem, 3vw, 2rem);
+        margin: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       }
 
-      .faq-item:last-child {
-        margin-bottom: 0;
+      .faq-item:first-child {
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
       }
 
       .faq-q {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        width: 100%;
+        margin: 0;
+        padding: 1.125rem 0;
+        border: 0;
+        background: transparent;
         font-family: "Inter", system-ui, sans-serif;
         font-size: 18px;
         line-height: 28px;
         font-weight: 500;
         color: var(--color-text-white);
-        margin: 0 0 0.5rem;
-        vertical-align: baseline;
+        text-align: left;
+        cursor: pointer;
+        transition: color 0.15s ease;
+      }
+
+      .faq-q:hover {
+        color: #e5e5e5;
+      }
+
+      .faq-q:focus-visible {
+        outline: 2px solid rgb(94, 234, 212);
+        outline-offset: 4px;
+        border-radius: 2px;
+      }
+
+      .faq-q__icon {
+        flex: 0 0 auto;
+        width: 20px;
+        height: 20px;
+        color: var(--color-subtext);
+        transition: transform 0.25s ease, color 0.15s ease;
+      }
+
+      .faq-item.is-open .faq-q__icon {
+        transform: rotate(180deg);
+        color: rgb(0, 153, 102);
       }
 
       .faq-a {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.28s ease;
+      }
+
+      .faq-item.is-open .faq-a {
+        grid-template-rows: 1fr;
+      }
+
+      .faq-a__inner {
+        overflow: hidden;
+        min-height: 0;
+      }
+
+      .faq-a__text {
         font-family: "Inter", system-ui, sans-serif;
         font-size: 16px;
         line-height: 24px;
         font-weight: 400;
         color: var(--color-subtext);
         margin: 0;
-        vertical-align: baseline;
+        padding: 0 0 1.25rem;
       }
 
-      .faq-list dd {
-        margin-inline-start: 0;
+      @media (prefers-reduced-motion: reduce) {
+        .faq-a {
+          transition: none;
+        }
+
+        .faq-q__icon {
+          transition: none;
+        }
       }
 
       .insights-section,
@@ -1404,48 +1462,123 @@
     <section class="faq-section" id="faq" aria-labelledby="faq-heading">
       <p class="faq-kicker">Common questions</p>
       <h2 class="faq-title" id="faq-heading">Frequently Asked Questions?</h2>
-      <dl class="faq-list">
-        <div class="faq-item">
-          <dt class="faq-q">How long does the cryptocurrency tracing process take?</dt>
-          <dd class="faq-a">
-            Most tracing cases begin with an initial findings report within 5-10 business days.
-            Complex cases that involve multiple wallets, cross-chain activity, or mixer usage may
-            take longer depending on data volume and cooperation from relevant platforms.
-          </dd>
+      <div class="faq-list" role="list">
+        <div class="faq-item" role="listitem">
+          <button
+            type="button"
+            class="faq-q"
+            id="faq-q-1"
+            aria-expanded="false"
+            aria-controls="faq-a-1"
+          >
+            <span>How long does the cryptocurrency tracing process take?</span>
+            <svg class="faq-q__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="faq-a" id="faq-a-1" role="region" aria-labelledby="faq-q-1">
+            <div class="faq-a__inner">
+              <p class="faq-a__text">
+                Most tracing cases begin with an initial findings report within 5-10 business days.
+                Complex cases that involve multiple wallets, cross-chain activity, or mixer usage may
+                take longer depending on data volume and cooperation from relevant platforms.
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div class="faq-item">
-          <dt class="faq-q">What information do I need to provide for the investigation?</dt>
-          <dd class="faq-a">
-            The most helpful materials include wallet addresses, transaction hashes, exchange
-            records, screenshots, chat/email conversations, and a timeline of events.
-          </dd>
+        <div class="faq-item" role="listitem">
+          <button
+            type="button"
+            class="faq-q"
+            id="faq-q-2"
+            aria-expanded="false"
+            aria-controls="faq-a-2"
+          >
+            <span>What information do I need to provide for the investigation?</span>
+            <svg class="faq-q__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="faq-a" id="faq-a-2" role="region" aria-labelledby="faq-q-2">
+            <div class="faq-a__inner">
+              <p class="faq-a__text">
+                The most helpful materials include wallet addresses, transaction hashes, exchange
+                records, screenshots, chat/email conversations, and a timeline of events.
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div class="faq-item">
-          <dt class="faq-q">Can you guarantee recovery of my stolen cryptocurrency?</dt>
-          <dd class="faq-a">
-            No legitimate firm can guarantee recovery outcomes. We can guarantee a professional
-            forensic investigation, transparent reporting, and evidence-ready documentation.
-          </dd>
+        <div class="faq-item" role="listitem">
+          <button
+            type="button"
+            class="faq-q"
+            id="faq-q-3"
+            aria-expanded="false"
+            aria-controls="faq-a-3"
+          >
+            <span>Can you guarantee recovery of my stolen cryptocurrency?</span>
+            <svg class="faq-q__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="faq-a" id="faq-a-3" role="region" aria-labelledby="faq-q-3">
+            <div class="faq-a__inner">
+              <p class="faq-a__text">
+                No legitimate firm can guarantee recovery outcomes. We can guarantee a professional
+                forensic investigation, transparent reporting, and evidence-ready documentation.
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div class="faq-item">
-          <dt class="faq-q">Do you work directly with law enforcement?</dt>
-          <dd class="faq-a">
-            Yes. We prepare structured forensic reports and supporting exhibits designed for law
-            enforcement, legal teams, and compliance departments.
-          </dd>
+        <div class="faq-item" role="listitem">
+          <button
+            type="button"
+            class="faq-q"
+            id="faq-q-4"
+            aria-expanded="false"
+            aria-controls="faq-a-4"
+          >
+            <span>Do you work directly with law enforcement?</span>
+            <svg class="faq-q__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="faq-a" id="faq-a-4" role="region" aria-labelledby="faq-q-4">
+            <div class="faq-a__inner">
+              <p class="faq-a__text">
+                Yes. We prepare structured forensic reports and supporting exhibits designed for law
+                enforcement, legal teams, and compliance departments.
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div class="faq-item">
-          <dt class="faq-q">What cryptocurrencies can you trace?</dt>
-          <dd class="faq-a">
-            We trace major assets and networks including Bitcoin, Ethereum, USDT, USDC, BNB Chain
-            assets, and many ERC-20 and TRC-20 tokens.
-          </dd>
+        <div class="faq-item" role="listitem">
+          <button
+            type="button"
+            class="faq-q"
+            id="faq-q-5"
+            aria-expanded="false"
+            aria-controls="faq-a-5"
+          >
+            <span>What cryptocurrencies can you trace?</span>
+            <svg class="faq-q__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="faq-a" id="faq-a-5" role="region" aria-labelledby="faq-q-5">
+            <div class="faq-a__inner">
+              <p class="faq-a__text">
+                We trace major assets and networks including Bitcoin, Ethereum, USDT, USDC, BNB Chain
+                assets, and many ERC-20 and TRC-20 tokens.
+              </p>
+            </div>
+          </div>
         </div>
-      </dl>
+      </div>
     </section>
 
     <section class="contact-section" id="contact" aria-labelledby="contact-heading">
@@ -1627,6 +1760,36 @@
 
         mq.addEventListener("change", function (e) {
           if (!e.matches) setOpen(false);
+        });
+      })();
+
+      (function () {
+        var items = document.querySelectorAll(".faq-item");
+        if (!items.length) return;
+
+        items.forEach(function (item) {
+          var btn = item.querySelector(".faq-q");
+          if (!btn) return;
+
+          btn.addEventListener("click", function () {
+            var isOpen = item.classList.contains("is-open");
+
+            // Close all other items (single-open accordion)
+            items.forEach(function (other) {
+              if (other === item) return;
+              other.classList.remove("is-open");
+              var otherBtn = other.querySelector(".faq-q");
+              if (otherBtn) otherBtn.setAttribute("aria-expanded", "false");
+            });
+
+            if (isOpen) {
+              item.classList.remove("is-open");
+              btn.setAttribute("aria-expanded", "false");
+            } else {
+              item.classList.add("is-open");
+              btn.setAttribute("aria-expanded", "true");
+            }
+          });
         });
       })();
     </script>
