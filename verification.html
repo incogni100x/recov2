@@ -108,6 +108,9 @@
       }
 
       .site-nav__brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.625rem;
         font-family: "Inter", system-ui, sans-serif;
         font-size: 18px;
         line-height: 28px;
@@ -116,6 +119,13 @@
         text-decoration: none;
         letter-spacing: 0;
         justify-self: start;
+      }
+
+      .site-brand__logo {
+        display: block;
+        width: 28px;
+        height: 28px;
+        flex: 0 0 auto;
       }
 
       .site-nav__brand:hover {
@@ -506,6 +516,9 @@
       }
 
       .site-footer__brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.625rem;
         justify-self: start;
         max-width: 100%;
         font-family: "Inter", system-ui, sans-serif;
@@ -515,6 +528,11 @@
         color: var(--color-text-white);
         text-decoration: none;
         letter-spacing: 0;
+      }
+
+      .site-footer__brand .site-brand__logo {
+        width: 32px;
+        height: 32px;
       }
 
       .site-footer__nav {
@@ -670,7 +688,10 @@
   </head>
   <body>
     <nav class="site-nav" aria-label="Main navigation">
-      <a class="site-nav__brand" href="./index.html">VeriTrace Group</a>
+      <a class="site-nav__brand" href="./index.html">
+        <img class="site-brand__logo" src="./logo.svg" alt="" width="28" height="28" />
+        <span>VeriTrace Group</span>
+      </a>
       <button
         type="button"
         class="site-nav__toggle"
@@ -775,7 +796,10 @@
 
     <footer class="site-footer">
       <div class="site-footer__row">
-        <a class="site-footer__brand" href="./index.html">VeriTrace Group</a>
+        <a class="site-footer__brand" href="./index.html">
+          <img class="site-brand__logo" src="./logo.svg" alt="" width="32" height="32" />
+          <span>VeriTrace Group</span>
+        </a>
         <nav class="site-footer__nav" aria-label="Footer">
           <div>
             <h2 class="site-footer__heading" id="footer-pages">Pages</h2>
