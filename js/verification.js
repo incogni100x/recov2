@@ -9,6 +9,10 @@
   const caseIdInput = document.getElementById("caseId");
   const lookupSubmitButton = document.getElementById("lookupSubmitButton");
   const proofSubmitButton = document.getElementById("proofSubmitButton");
+  const proofFilesInput = document.getElementById("proofFiles");
+  const proofFilesCount = document.getElementById("proofFilesCount");
+  const proofFilesList = document.getElementById("proofFilesList");
+  let selectedProofFiles = [];
   let loadedCaseId = "";
 
   if (!cfg || !lookupForm || !proofForm) return;
@@ -33,6 +37,53 @@
     button.setAttribute("aria-busy", String(isLoading));
     if (label) label.textContent = isLoading ? loadingLabel : defaultLabel;
   }
+
+  function updateProofFilesCount() {
+    if (!proofFilesCount || !proofFilesList) return;
+    const count = selectedProofFiles.length;
+    proofFilesCount.textContent = `${count} of 3 ${count === 1 ? "file" : "files"} selected.`;
+    proofFilesList.replaceChildren();
+    selectedProofFiles.forEach((file, index) => {
+      const item = document.createElement("li");
+      item.className = "selected-files__item";
+      const name = document.createElement("span");
+      name.className = "selected-files__name";
+      name.textContent = file.name;
+      const remove = document.createElement("button");
+      remove.className = "selected-files__remove";
+      remove.type = "button";
+      remove.textContent = "Remove";
+      remove.setAttribute("aria-label", `Remove ${file.name}`);
+      remove.addEventListener("click", () => {
+        selectedProofFiles.splice(index, 1);
+        syncProofFilesInput();
+        updateProofFilesCount();
+      });
+      item.append(name, remove);
+      proofFilesList.appendChild(item);
+    });
+  }
+
+  function syncProofFilesInput() {
+    if (!proofFilesInput || typeof DataTransfer === "undefined") return;
+    const transfer = new DataTransfer();
+    selectedProofFiles.forEach((file) => transfer.items.add(file));
+    proofFilesInput.files = transfer.files;
+  }
+
+  proofFilesInput?.addEventListener("change", () => {
+    const incomingFiles = Array.from(proofFilesInput.files || []);
+    incomingFiles.forEach((file) => {
+      const alreadySelected = selectedProofFiles.some((selected) =>
+        selected.name === file.name
+        && selected.size === file.size
+        && selected.lastModified === file.lastModified
+      );
+      if (!alreadySelected && selectedProofFiles.length < 3) selectedProofFiles.push(file);
+    });
+    syncProofFilesInput();
+    updateProofFilesCount();
+  });
 
   function showCaseSummary(caseData) {
     loadedCaseId = caseData.case_id;
@@ -122,8 +173,7 @@
     }
 
     const notes = document.getElementById("proofNotes").value.trim();
-    const filesInput = document.getElementById("proofFiles");
-    const files = Array.from(filesInput.files || []).slice(0, 3);
+    const files = selectedProofFiles.slice(0, 3);
 
     setButtonLoading(proofSubmitButton, true, "Submitting...", "Submit Verification Proof");
     setText(proofStatus, "Submitting proof...", "loading");
@@ -157,6 +207,8 @@
       if (!response.ok) throw new Error(data.error || "Proof submission failed");
 
       proofForm.reset();
+      selectedProofFiles = [];
+      updateProofFilesCount();
       setText(proofStatus, "Proof submitted successfully. Confirmation email sent.", "success");
     } catch (err) {
       setText(proofStatus, err.message || "Submission failed.", "error");
