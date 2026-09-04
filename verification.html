@@ -15,9 +15,13 @@
     />
     <style>
       :root {
-        --color-subtext: rgb(107, 107, 107);
+        --color-subtext: rgb(163, 163, 163);
+        --color-muted: rgb(143, 143, 143);
         --color-contact-bg: rgb(0, 132, 209);
         --color-text-white: rgb(250, 250, 250);
+        --color-error: rgb(248, 113, 113);
+        --color-success: rgb(134, 239, 172);
+        --color-focus: rgb(94, 234, 212);
         --site-nav-inline: 272px;
         font-synthesis: none;
         text-rendering: optimizeLegibility;
@@ -66,6 +70,21 @@
         overflow-x: hidden;
       }
 
+      ::selection {
+        background: rgba(0, 132, 209, 0.45);
+        color: var(--color-text-white);
+      }
+
+      h1,
+      h2,
+      h3 {
+        text-wrap: balance;
+      }
+
+      p {
+        text-wrap: pretty;
+      }
+
       .site-nav {
         font-family: "Inter", system-ui, sans-serif;
         background: #161616;
@@ -105,7 +124,7 @@
 
       .site-nav__brand:focus-visible,
       .site-nav__link:focus-visible {
-        outline: 2px solid rgb(94, 234, 212);
+        outline: 2px solid var(--color-focus);
         outline-offset: 4px;
         border-radius: 2px;
       }
@@ -315,12 +334,19 @@
       }
 
       .field::placeholder {
-        color: rgba(107, 107, 107, 0.9);
+        color: var(--color-muted);
       }
 
       .field:focus {
         border-color: rgb(245, 158, 11);
         background: #202020;
+      }
+
+      .field:focus-visible,
+      .button:focus-visible,
+      .site-footer__link:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 3px;
       }
 
       textarea.field {
@@ -351,11 +377,19 @@
       }
 
       .status.success {
-        color: rgb(134, 239, 172);
+        color: var(--color-success);
       }
 
       .status.error {
-        color: rgb(248, 113, 113);
+        color: var(--color-error);
+      }
+
+      .status.info {
+        color: var(--color-subtext);
+      }
+
+      .status.loading {
+        color: var(--color-text-white);
       }
 
       .button-spinner {
@@ -381,6 +415,10 @@
       .case-details {
         max-width: 56rem;
         margin-top: clamp(2rem, 5vw, 3rem);
+        padding: clamp(1.25rem, 3vw, 1.75rem);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        background: #1b1b1b;
       }
 
       .case-details-title {
@@ -421,7 +459,7 @@
       }
 
       .case-summary dd {
-        color: rgb(160, 160, 160);
+        color: var(--color-subtext);
       }
 
       .case-summary dd:last-child {
@@ -432,6 +470,22 @@
         display: grid;
         gap: 1rem;
         margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .case-id-field {
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "ss02" 1;
+        letter-spacing: 0.035em;
+        text-transform: uppercase;
+      }
+
+      .field-hint {
+        margin: 0.5rem 0 0;
+        font-size: 14px;
+        line-height: 20px;
+        color: var(--color-subtext);
       }
 
       .site-footer {
@@ -575,6 +629,15 @@
           width: 100%;
         }
 
+        .case-summary dl {
+          grid-template-columns: 1fr;
+          gap: 0.2rem;
+        }
+
+        .case-summary dd {
+          margin-bottom: 0.85rem;
+        }
+
         .site-footer__row {
           grid-template-columns: 1fr;
           justify-items: start;
@@ -606,7 +669,7 @@
   </head>
   <body>
     <nav class="site-nav" aria-label="Main navigation">
-      <a class="site-nav__brand" href="./index.html">Hacks</a>
+      <a class="site-nav__brand" href="./index.html">VeriTrace Group</a>
       <button
         type="button"
         class="site-nav__toggle"
@@ -653,10 +716,11 @@
         <div class="field-group">
           <label class="label" for="caseId">Case ID</label>
           <input
-            class="field"
+            class="field case-id-field"
             id="caseId"
             name="caseId"
             placeholder="PCH-2026-AB12CD"
+            autocomplete="off"
             required
           />
         </div>
@@ -665,7 +729,7 @@
           <span class="button-label">Retrieve Case</span>
         </button>
       </form>
-      <p id="lookupStatus" class="status-line"></p>
+      <p id="lookupStatus" class="status-line" role="status" aria-live="polite"></p>
 
       <section id="caseDetails" class="case-details hidden" aria-labelledby="case-details-heading">
         <h2 class="case-details-title" id="case-details-heading">Retrieved Case</h2>
@@ -684,14 +748,16 @@
               class="field"
               multiple
               accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.doc,.docx"
+              aria-describedby="proofFilesHint"
             />
+            <p class="field-hint" id="proofFilesHint">Up to 3 files. PDF, image, text, or Word documents accepted.</p>
           </div>
           <button class="button" type="submit" id="proofSubmitButton">
             <span class="button-spinner" aria-hidden="true"></span>
             <span class="button-label">Submit Verification Proof</span>
           </button>
         </form>
-        <p id="proofStatus" class="status-line"></p>
+        <p id="proofStatus" class="status-line" role="status" aria-live="polite"></p>
       </section>
     </main>
 

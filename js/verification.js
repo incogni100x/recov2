@@ -15,11 +15,13 @@
 
   const endpoint = `${cfg.supabaseUrl}/functions/v1/verify-case`;
 
-  function setText(node, msg, isError) {
-    const icon = isError
+  function setText(node, msg, state = "info") {
+    const icon = state === "error"
       ? '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"></circle><path d="M12 7v6M12 16h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>'
-      : '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"></circle><path d="M8 12.5l2.5 2.5L16.5 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
-    const typeClass = isError ? "error" : "success";
+      : state === "success"
+        ? '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"></circle><path d="M8 12.5l2.5 2.5L16.5 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"></circle><path d="M12 8v4l2.5 1.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+    const typeClass = state;
     node.innerHTML = msg ? `<span class="status ${typeClass}">${icon}<span>${msg}</span></span>` : "";
   }
 
@@ -66,8 +68,9 @@
 
   lookupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const caseId = caseIdInput.value.trim();
+    const caseId = caseIdInput.value.trim().toUpperCase();
     if (!caseId) return;
+    caseIdInput.value = caseId;
 
     if (caseId.toUpperCase() === "PCH-2026-AB12CD") {
       showCaseSummary({
@@ -82,12 +85,12 @@
         case_description:
           "Sample preview case for checking the verification layout before using a real case ID.",
       });
-      setText(lookupStatus, "Sample case loaded. You can now preview the proof section.", false);
+      setText(lookupStatus, "Sample case loaded. You can now preview the proof section.", "success");
       return;
     }
 
     setButtonLoading(lookupSubmitButton, true, "Retrieving...", "Retrieve Case");
-    setText(lookupStatus, "Retrieving case...", false);
+    setText(lookupStatus, "Retrieving case...", "loading");
 
     try {
       const response = await fetch(endpoint, {
@@ -103,9 +106,9 @@
       if (!response.ok) throw new Error(data.error || "Could not retrieve case");
 
       showCaseSummary(data.case);
-      setText(lookupStatus, "Case found. You can now submit supporting proof.", false);
+      setText(lookupStatus, "Case found. You can now submit supporting proof.", "success");
     } catch (err) {
-      setText(lookupStatus, err.message || "Lookup failed.", true);
+      setText(lookupStatus, err.message || "Lookup failed.", "error");
     } finally {
       setButtonLoading(lookupSubmitButton, false, "Retrieving...", "Retrieve Case");
     }
@@ -114,7 +117,7 @@
   proofForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!loadedCaseId) {
-      setText(proofStatus, "Retrieve a case first.", true);
+      setText(proofStatus, "Retrieve a case first.", "error");
       return;
     }
 
@@ -123,7 +126,7 @@
     const files = Array.from(filesInput.files || []).slice(0, 3);
 
     setButtonLoading(proofSubmitButton, true, "Submitting...", "Submit Verification Proof");
-    setText(proofStatus, "Submitting proof...", false);
+    setText(proofStatus, "Submitting proof...", "loading");
     try {
       const encodedFiles = [];
       for (const file of files) {
@@ -154,9 +157,9 @@
       if (!response.ok) throw new Error(data.error || "Proof submission failed");
 
       proofForm.reset();
-      setText(proofStatus, "Proof submitted successfully. Confirmation email sent.", false);
+      setText(proofStatus, "Proof submitted successfully. Confirmation email sent.", "success");
     } catch (err) {
-      setText(proofStatus, err.message || "Submission failed.", true);
+      setText(proofStatus, err.message || "Submission failed.", "error");
     } finally {
       setButtonLoading(proofSubmitButton, false, "Submitting...", "Submit Verification Proof");
     }

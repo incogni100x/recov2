@@ -29,10 +29,10 @@
 
   const endpoint = `${cfg.supabaseUrl}/functions/v1/submit-case`;
 
-  function setStatus(message, isError) {
+  function setStatus(message, state = "info") {
     if (!statusNode) return;
     statusNode.textContent = message;
-    statusNode.style.color = isError ? "rgb(239, 68, 68)" : "rgb(160, 160, 160)";
+    statusNode.dataset.state = message ? state : "";
   }
 
   function setSubmitting(isSubmitting) {
@@ -48,7 +48,7 @@
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     setSubmitting(true);
-    setStatus("Submitting your case...", false);
+    setStatus("Submitting your case...", "info");
 
     const body = {
       firstName: form.firstName.value.trim(),
@@ -77,11 +77,11 @@
       if (!response.ok) throw new Error(data.error || "Failed to submit case");
 
       form.reset();
-      setStatus("", false);
+      setStatus("");
       if (successCard) successCard.classList.remove("hidden");
       form.classList.add("hidden");
     } catch (error) {
-      setStatus(error.message || "Submission failed. Please try again.", true);
+      setStatus(error.message || "Submission failed. Please try again.", "error");
     } finally {
       setSubmitting(false);
     }

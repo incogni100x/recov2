@@ -15,9 +15,13 @@
     />
     <style>
       :root {
-        --color-subtext: rgb(107, 107, 107);
+        --color-subtext: rgb(163, 163, 163);
+        --color-muted: rgb(143, 143, 143);
         --color-contact-bg: rgb(0, 132, 209);
         --color-text-white: rgb(250, 250, 250);
+        --color-error: rgb(248, 113, 113);
+        --color-success: rgb(134, 239, 172);
+        --color-focus: rgb(94, 234, 212);
         --site-nav-inline: 272px;
         font-synthesis: none;
         text-rendering: optimizeLegibility;
@@ -62,6 +66,21 @@
         overflow-x: hidden;
       }
 
+      ::selection {
+        background: rgba(0, 132, 209, 0.45);
+        color: var(--color-text-white);
+      }
+
+      h1,
+      h2,
+      h3 {
+        text-wrap: balance;
+      }
+
+      p {
+        text-wrap: pretty;
+      }
+
       .site-nav {
         font-family: "Inter", system-ui, sans-serif;
         background: #161616;
@@ -101,7 +120,7 @@
 
       .site-nav__brand:focus-visible,
       .site-nav__link:focus-visible {
-        outline: 2px solid rgb(94, 234, 212);
+        outline: 2px solid var(--color-focus);
         outline-offset: 4px;
         border-radius: 2px;
       }
@@ -324,6 +343,7 @@
         font-weight: 600;
         color: var(--color-text-white);
         margin: 0;
+        font-variant-numeric: tabular-nums;
       }
 
       .hero-achievement__label {
@@ -700,6 +720,7 @@
         font-weight: 600;
         color: var(--color-contact-bg);
         margin: 0 0 0.5rem;
+        font-variant-numeric: tabular-nums;
       }
 
       .review-name {
@@ -791,7 +812,7 @@
 
       .case-input::placeholder,
       .case-textarea::placeholder {
-        color: rgba(107, 107, 107, 0.9);
+        color: var(--color-muted);
       }
 
       .case-input:focus,
@@ -799,6 +820,16 @@
       .case-textarea:focus {
         border-color: rgb(245, 158, 11);
         background: #202020;
+      }
+
+      .case-input:focus-visible,
+      .case-select:focus-visible,
+      .case-textarea:focus-visible,
+      .case-submit:focus-visible,
+      .contact-alt:focus-visible,
+      .site-footer__link:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 3px;
       }
 
       .case-textarea {
@@ -883,6 +914,14 @@
         max-width: 44rem;
       }
 
+      .case-status[data-state="error"] {
+        color: var(--color-error);
+      }
+
+      .case-status[data-state="info"] {
+        color: var(--color-subtext);
+      }
+
       .contact-alt {
         display: inline-flex;
         align-items: center;
@@ -919,6 +958,10 @@
       .case-success {
         max-width: 44rem;
         margin: 1.5rem 0 0;
+        padding: 1.25rem;
+        border: 1px solid rgba(134, 239, 172, 0.28);
+        border-radius: 12px;
+        background: rgba(134, 239, 172, 0.06);
       }
 
       .case-success-title {
@@ -926,7 +969,7 @@
         font-size: 18px;
         line-height: 28px;
         font-weight: 500;
-        color: var(--color-text-white);
+        color: var(--color-success);
         margin: 0 0 0.5rem;
       }
 
