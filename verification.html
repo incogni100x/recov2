@@ -15,8 +15,8 @@
     />
     <style>
       :root {
-        --color-subtext: rgb(163, 163, 163);
-        --color-muted: rgb(143, 143, 143);
+        --color-subtext: rgb(203, 203, 203);
+        --color-muted: rgb(174, 174, 174);
         --color-contact-bg: rgb(0, 132, 209);
         --color-text-white: rgb(250, 250, 250);
         --color-error: rgb(248, 113, 113);
@@ -283,10 +283,10 @@
         font-family: "Inter", system-ui, sans-serif;
         font-size: 16px;
         line-height: 24px;
-        font-weight: 400;
+        font-weight: 500;
         color: var(--color-subtext);
         margin: 1.25rem 0 0;
-        max-width: 48rem;
+        max-width: 50rem;
       }
 
       .verify-section {
@@ -484,7 +484,8 @@
       .field-hint {
         margin: 0.5rem 0 0;
         font-size: 14px;
-        line-height: 20px;
+        line-height: 21px;
+        font-weight: 500;
         color: var(--color-subtext);
       }
 
@@ -706,8 +707,8 @@
       <p class="verify-kicker">Case verification</p>
       <h1 class="verify-title">Retrieve your case and submit supporting proof.</h1>
       <p class="verify-subtext">
-        Enter your case ID to review your submission, then upload additional proof documents for the
-        verification team.
+        Enter the case ID from your confirmation email to review your submission. You can then add
+        notes and upload supporting documents securely for our verification team.
       </p>
     </header>
 
@@ -738,7 +739,16 @@
         <form id="proofForm" class="proof-form">
           <div>
             <label for="proofNotes" class="label">Additional Proof Notes *</label>
-            <textarea id="proofNotes" class="field" required></textarea>
+            <textarea
+              id="proofNotes"
+              class="field"
+              placeholder="Briefly explain what your supporting proof shows"
+              aria-describedby="proofNotesHint"
+              required
+            ></textarea>
+            <p class="field-hint" id="proofNotesHint">
+              Include any dates, transaction details, or context that will help us review your files.
+            </p>
           </div>
           <div>
             <label for="proofFiles" class="label">Upload Files (max 3 files)</label>
@@ -750,7 +760,9 @@
               accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.doc,.docx"
               aria-describedby="proofFilesHint"
             />
-            <p class="field-hint" id="proofFilesHint">Up to 3 files. PDF, image, text, or Word documents accepted.</p>
+            <p class="field-hint" id="proofFilesHint">
+              Upload up to 3 files. PDF, image, text, and Word documents are accepted.
+            </p>
           </div>
           <button class="button" type="submit" id="proofSubmitButton">
             <span class="button-spinner" aria-hidden="true"></span>
